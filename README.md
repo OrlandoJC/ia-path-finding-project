@@ -3,7 +3,6 @@
 
 
 ## Installation
----
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install the required packages.
 
 ```bash
@@ -16,7 +15,6 @@ Run the app
    python UI.py
 ```
 ## Screenshot
----
 
 <div style="text-align:center">
   <img src="showcase/example.png" alt="Descripción de la imagen" width=580px>
