@@ -1,0 +1,2 @@
+python-astar==0.1.0
+customtkinter==5.1.2
