@@ -41,6 +41,8 @@ class App(customtkinter.CTk):
         self.last_shadow_obs = None
 
         self.rendered_path = []
+        self.obstacles_add = []
+        self.obstacles_add.extend(obstacles)
 
         self.currentTagSelected = None
         self.current_coord_selected = (15, 10)
@@ -162,6 +164,7 @@ class App(customtkinter.CTk):
         if self.user_obstacle:
             colocarObstaculo(self.canvas, x, y, self.user_obstacle_size)
             self.user_obstacle = False
+            self.obstacles_add.append((x, x + self.user_obstacle_size, y))
 
     def delete_box(self):
 
@@ -173,8 +176,25 @@ class App(customtkinter.CTk):
             )
 
             if answer:
-                self.canvas.delete(self.currentTagSelected)
+                selected_box = self.canvas.find_withtag(self.currentTagSelected)
+                current_selected_tg = self.canvas.gettags(self.currentTagSelected)
 
+                if "obstacle" in current_selected_tg:
+                    coords = self.canvas.bbox(selected_box)
+                    x_pos = int((coords[0]+1) / 30)
+                    span  = int((coords[2]+1) / 30)
+                    y_pos = int((coords[1]+1) / 30)
+
+                    tuple_seek = (x_pos, span, y_pos)
+                    
+                    for i, tupla in enumerate(self.obstacles_add):
+                        if tupla == tuple_seek:
+                            lista_tupla = list(self.obstacles_add)  # convertir la tupla en una lista
+                            lista_tupla.pop(i)  # eliminar el elemento por su índice
+                            self.obstacles_add = tuple(lista_tupla)
+        
+                self.canvas.delete(self.currentTagSelected)
+            
         # code for deleting a box ...
 
     """
@@ -228,7 +248,7 @@ class App(customtkinter.CTk):
 
         print(goal_coords)
         # Llamar a la función para ejecutar en paralelo
-        resultados = ejecutar_en_paralelo(goal_coords)
+        resultados = ejecutar_en_paralelo(goal_coords, self.obstacles_add)
 
         # Tiempo total de ejecución
         tiempo_total = time.time() - inicio
@@ -239,6 +259,7 @@ class App(customtkinter.CTk):
 
         # Imprimir los resultados obtenidos
         print("Resultados:")
+
         recompensas = []
 
         for resultado in resultados:
@@ -248,7 +269,7 @@ class App(customtkinter.CTk):
 
         # print(recompensas)
         print("El camino mas corto es : ")
-        print(short_path)
+        print(short_path[1])
 
         parejas = []
         ruta = short_path[1]
