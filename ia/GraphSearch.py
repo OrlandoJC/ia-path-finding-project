@@ -3,7 +3,6 @@ import random
 from concurrent import futures
 import multiprocessing, time, concurrent
 
-
 obstacles = [(5, 19, 18), (10, 23, 13), (2, 10, 10)]
 
 def get_path(inicio_bot, fin_objetivo, obstacl):

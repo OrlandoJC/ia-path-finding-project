@@ -13,12 +13,11 @@ class BotsView(customtkinter.CTkToplevel):
         self.paths = paths
         self.onDrawPath = onDrawPath
 
-
         combobox = customtkinter.CTkComboBox(master=self,
                                      values=["Bot 1", "Bot 2", "Bot 3", "Bot 4", "Bot 5", "Bot 6", "Bot 7", "Bot 8"],
-                                     command=self.combobox_callback, button_color="#6495ED", text_color="black")
+                                     command=self.combobox_callback, button_color="#6495ED", text_color="black", state="readonly")
         combobox.pack(padx=20, pady=10)
-        combobox.set("option 2")  # set initial value
+        combobox.set("Seleccionar bot..")  # set initial value
 
     def combobox_callback(self, choice):
         print("combobox dropdown clicked:", choice)
