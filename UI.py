@@ -6,6 +6,7 @@ from utils.graphics import colocarCaja, crearCuadricula, colocarObstaculo, boxBy
 from database.mapa import map, obstacles
 import time
 import threading
+from tkinter import messagebox
 
 from ia.GraphSearch import ejecutar_en_paralelo
 
@@ -93,18 +94,19 @@ class App(customtkinter.CTk):
         buttonFrame.columnconfigure(2, weight=1)
         
 
-        button_delete = customtkinter.CTkButton(buttonFrame, text="delete box", command=self.delete_box,
-                                                text_color="white")
+        button_delete = customtkinter.CTkButton(buttonFrame, text="delete box", command=self.delete_box,text_color="white")
         button_adding = customtkinter.CTkButton(buttonFrame, text="add box", command=self.add_box, text_color="white")
-        button_solved = customtkinter.CTkButton(buttonFrame, text="find path", command=self.search_path,
-                                                text_color="white")
-        button_obstac = customtkinter.CTkButton(buttonFrame, text="+ obstacle", command=self.add_obstacle,
-                                                text_color="white")
+        button_solved = customtkinter.CTkButton(buttonFrame, text="find path", command=self.search_path, text_color="white")
+        button_obstac = customtkinter.CTkButton(buttonFrame, text="+ obstacle", command=self.add_obstacle, text_color="white")
+        button_instruc= customtkinter.CTkButton(buttonFrame, text="Instrucciones", text_color="white", command=self.info, fg_color="red")
+        
 
         button_delete.grid(row=0, column=0, padx=10, pady=10)
         button_adding.grid(row=0, column=1, padx=10, pady=10)
         button_solved.grid(row=0, column=2, padx=10, pady=10)
         button_obstac.grid(row=1, column=1, padx=10, pady=10)
+        button_instruc.grid(row=1, column=2, padx=10, pady=10)
+
 
         buttonFrame.pack(fill=customtkinter.X)
 
@@ -349,6 +351,8 @@ class App(customtkinter.CTk):
 
             self.rendered_path.append(line)
             self.rendered_path.append(dot)
+    def info (self):
+        messagebox.showinfo(message="Buscar ruta corta\n1. Seleccionar el paquete(Cuadrado) \n2. Dar click a Buscar Ruta\n\n Agregar obstaculo \n1. Dar click a Añadir Obstaculo\n 2. Poner un numero de 1 a 6\n3. Colocar obstaculo en donde gustes\n\n Agregar paquete \n1. Dar click a Añadir Paquete\n3. Colocar paquete en donde gustes\n\n Borrar \n1. Seleccionar un paquete u obstaculo en el mapa\n2. Dar click a Borrar", title="Instrucciones")
 
 
 if __name__ == "__main__":
