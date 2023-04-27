@@ -5,10 +5,10 @@ def boxByReference(canvas, x, y, start=0, base=30):
   return canvas.create_rectangle((start + x * base, start + y * base), (start + x * base + 60, start + y * base+60), fill='#b3dbff', outline='#b3dbff', tags = ("box","box{x}{y}"))
 
 def colocarObstaculo(canvas, x, y, tam, start=0, base=30):
-  canvas.create_rectangle((start + x * base, start + y * base), (start + x * base + tam*30, start + y * base+30), fill='#77554E', outline='#77554E', tags = ("box", "obstacle","box{x}{y}"))
+  canvas.create_rectangle((start + x * base, start + y * base), (start + x * base + tam*30, start + y * base+30), fill='#54697e', outline='#54697e', tags = ("box", "obstacle","box{x}{y}"))
 
 def obstacleReference(canvas, x, y, tam, start=0, base=30):
-  return canvas.create_rectangle((start + x * base, start + y * base), (start + x * base + tam*30, start + y * base+30), fill='#77554E', outline='#77554E', tags = ("box", "obstacle","box{x}{y}"))
+  return canvas.create_rectangle((start + x * base, start + y * base), (start + x * base + tam*30, start + y * base+30), fill='#54697e', outline='#54697e', tags = ("box", "obstacle","box{x}{y}"))
 
 def crearCuadricula(canvas):
   for i in range(30):

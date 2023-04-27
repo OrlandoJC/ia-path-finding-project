@@ -105,6 +105,7 @@ def get_path(inicio_bot, fin_objetivo, obstacl):
     #             print(". ", end="")
     #     print()
 
+
     return [abs(recompensa), path]
 
 

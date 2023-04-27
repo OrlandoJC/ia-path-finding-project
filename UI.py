@@ -15,6 +15,7 @@ from config.app import AppConfig
 
 # views
 from views.config import SettingsView
+from views.BotsView import BotsView
 
 # environment
 from config.enviroment import *
@@ -90,6 +91,7 @@ class App(customtkinter.CTk):
         buttonFrame.columnconfigure(0, weight=1)
         buttonFrame.columnconfigure(1, weight=1)
         buttonFrame.columnconfigure(2, weight=1)
+        
 
         button_delete = customtkinter.CTkButton(buttonFrame, text="delete box", command=self.delete_box,
                                                 text_color="white")
@@ -145,16 +147,16 @@ class App(customtkinter.CTk):
 
                 if self.currentTagSelected is None:  # CAMBIAR POR ID NO TAG
                     self.currentTagSelected = current_id
-                    self.canvas.itemconfigure(current_id, fill='red')
+                    self.canvas.itemconfigure(current_id, fill='#E93251')
                 else:
                     current_selected_tg = self.canvas.gettags(self.currentTagSelected)
 
                     if "obstacle" in current_selected_tg:
-                        self.canvas.itemconfigure(self.currentTagSelected, fill='#77554E')
+                        self.canvas.itemconfigure(self.currentTagSelected, fill='#34495E')
                     else:
                         self.canvas.itemconfigure(self.currentTagSelected, fill='#33A1FF')
 
-                    self.canvas.itemconfigure(current_id, fill='red')
+                    self.canvas.itemconfigure(current_id, fill='#E93251')
                     self.currentTagSelected = current_id
 
         if self.user_add_box:
@@ -226,10 +228,15 @@ class App(customtkinter.CTk):
         # Crear un hilo separado para ejecutar la función en paralelo
         t = threading.Thread(target=self.ejecutar_en_paralelo_async)
         t.start()
+        hilos_activos = threading.enumerate()
+        print('Los hilos activos son:', hilos_activos)
 
     """
         This function calls the searching path algorithtm and draws the result coordinates on the canvas
     """
+
+    def hola(c):
+        print("Hola")
 
     def ejecutar_en_paralelo_async(self):
         selected_box = self.canvas.find_withtag(self.currentTagSelected)
@@ -244,6 +251,8 @@ class App(customtkinter.CTk):
         # r = 3
         # self.canvas.create_oval(x-r + 2, y-r + 2, x+r + 2, y+r + 2, fill="#33A1FF")
 
+        self.config(cursor="watch")
+
         inicio = time.time()
 
         print(goal_coords)
@@ -253,6 +262,8 @@ class App(customtkinter.CTk):
         # Tiempo total de ejecución
         tiempo_total = time.time() - inicio
         print(f"Tiempo total: {tiempo_total} segundos")
+
+        self.config(cursor="arrow")
 
         self.progressbar.stop()
         self.progressbar.place_forget()
@@ -283,14 +294,18 @@ class App(customtkinter.CTk):
             tupla2 = par[1]
             x1, y1 = tupla1
             x2, y2 = tupla2
-
+            self.after(50)
             line = self.canvas.create_line(x1 * 30 + 2, y1 * 30 + 2, x2 * 30 + 2, y2 * 30 + 2, width=3, fill="#33A1FF")
             x, y, r = x2 * 30, y2 * 30, 3
-            dot = self.canvas.create_oval(x - r + 2, y - r + 2, x + r + 2, y + r + 2, fill="#33A1FF")
+            dot = self.canvas.create_oval(x - r + 2, y - r + 2, x + r + 2, y + r + 2, fill="#33A1FF", outline="#33A1FF")
 
             self.rendered_path.append(line)
             self.rendered_path.append(dot)
 
+        self.toplevel_window = BotsView(recompensas, self.draw_individual_path, self)
+        self.toplevel_window.focus()  # if window exists focus it
+
+        
     def clean_canvas(self):
 
         for path_element in self.rendered_path:
@@ -307,6 +322,33 @@ class App(customtkinter.CTk):
 
         dialog = customtkinter.CTkInputDialog(text="tamaño de obstaculo:", title="obstaculo")
         self.user_obstacle_size = int(dialog.get_input())
+
+    def draw_individual_path(self, path, color):
+        print("dibujando...", path)
+
+        
+        if self.rendered_path:
+            self.clean_canvas()
+
+        parejas = []
+        ruta = path
+
+        for i in range(len(ruta) - 1):
+            par = (ruta[i], ruta[i + 1])
+            parejas.append(par)
+
+        for par in parejas:
+            tupla1 = par[0]
+            tupla2 = par[1]
+            x1, y1 = tupla1
+            x2, y2 = tupla2
+
+            line = self.canvas.create_line(x1 * 30 + 2, y1 * 30 + 2, x2 * 30 + 2, y2 * 30 + 2, width=3, fill=color)
+            x, y, r = x2 * 30, y2 * 30, 3
+            dot = self.canvas.create_oval(x - r + 2, y - r + 2, x + r + 2, y + r + 2, fill=color,outline=color)
+
+            self.rendered_path.append(line)
+            self.rendered_path.append(dot)
 
 
 if __name__ == "__main__":
