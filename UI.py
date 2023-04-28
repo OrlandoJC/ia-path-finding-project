@@ -18,6 +18,7 @@ from views.config import SettingsView
 from views.BotsView import BotsView
 from views.LoadingView import LoadingView
 from views.instructions import Instructions
+from views.credits import Credits
 # environment
 from config.enviroment import *
 
@@ -119,15 +120,14 @@ class App(customtkinter.CTk):
         button_obstac = customtkinter.CTkButton(buttonFrame, text="🧱 Añadir obstaculo", command=self.add_obstacle, text_color="white",)
         button_solved = customtkinter.CTkButton(buttonFrame, text="⭐ Buscar camino", command=self.search_path, text_color="white", fg_color="#67DA75")
         button_instruc= customtkinter.CTkButton(buttonFrame, text="❔ Instrucciones", text_color="white", command=self.info, fg_color="#FD3E73")
-        
+        button_credits= customtkinter.CTkButton(buttonFrame, text="📋 Creditos", text_color="white", command=self.creditos, fg_color="#FD3E73")
 
         button_delete.grid(row=0, column=0, padx=10, pady=10)
         button_adding.grid(row=0, column=1, padx=10, pady=10)
         button_solved.grid(row=1, column=0, padx=10, pady=10)
         button_obstac.grid(row=0, column=2, padx=10, pady=10)
         button_instruc.grid(row=1, column=2, padx=10, pady=10)
-        
-
+        button_credits.grid(row=1, column=1, padx=10, pady=10)
 
         buttonFrame.pack(fill=customtkinter.X)
 
@@ -393,6 +393,9 @@ class App(customtkinter.CTk):
         instrucciones = Instructions(self.is_loading, self)
         instrucciones.focus()  # if window exists focus it
 
+    def creditos(self):
+        credito = Credits(self.is_loading, self)
+        credito.focus()  # if window exists focus it
 
 if __name__ == "__main__":
     app = App()
