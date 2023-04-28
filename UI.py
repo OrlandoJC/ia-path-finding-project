@@ -72,7 +72,7 @@ class App(customtkinter.CTk):
         self.main_program()
 
     def main_program(self):
-       # customtkinter.CTkLabel(master=self, text="Mapa").pack()
+        customtkinter.CTkLabel(master=self, text="Mapa").pack()
 
         self.canvas = customtkinter.CTkCanvas(
             master=self,
@@ -121,18 +121,12 @@ class App(customtkinter.CTk):
         button_instruc= customtkinter.CTkButton(buttonFrame, text="❔ Instrucciones", text_color="white", command=self.info, fg_color="#FD3E73")
         
 
-        # button_delete.grid(row=0, column=0, padx=10, pady=10)
-        # button_adding.grid(row=0, column=1, padx=10, pady=10)
-        # button_solved.grid(row=1, column=0, padx=10, pady=10)
-        # button_obstac.grid(row=0, column=2, padx=10, pady=10)
-        # button_instruc.grid(row=1, column=2, padx=10, pady=10)
-        
-        #prueba Manuel
         button_delete.grid(row=0, column=0, padx=10, pady=10)
         button_adding.grid(row=0, column=1, padx=10, pady=10)
-        button_solved.grid(row=0, column=2, padx=10, pady=10)
-        button_obstac.grid(row=0, column=3, padx=10, pady=10)
-        button_instruc.grid(row=0, column=4, padx=10, pady=10)
+        button_solved.grid(row=1, column=0, padx=10, pady=10)
+        button_obstac.grid(row=0, column=2, padx=10, pady=10)
+        button_instruc.grid(row=1, column=2, padx=10, pady=10)
+        
 
 
         buttonFrame.pack(fill=customtkinter.X)
