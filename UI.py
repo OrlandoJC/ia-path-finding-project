@@ -7,7 +7,6 @@ from database.mapa import map, obstacles
 import time
 import threading
 from tkinter import messagebox
-
 from ia.GraphSearch import ejecutar_en_paralelo
 
 # settings
@@ -18,7 +17,7 @@ from config.app import AppConfig
 from views.config import SettingsView
 from views.BotsView import BotsView
 from views.LoadingView import LoadingView
-
+from views.instructions import Instructions
 # environment
 from config.enviroment import *
 
@@ -73,7 +72,7 @@ class App(customtkinter.CTk):
         self.main_program()
 
     def main_program(self):
-        customtkinter.CTkLabel(master=self, text="Mapa").pack()
+       # customtkinter.CTkLabel(master=self, text="Mapa").pack()
 
         self.canvas = customtkinter.CTkCanvas(
             master=self,
@@ -94,7 +93,7 @@ class App(customtkinter.CTk):
         crearCuadricula(self.canvas)
         colocarCaja(self.canvas, 14, 8)
 
-        self.img = img = ImageTk.PhotoImage(file=r'img\robo.png')
+        self.img = img = ImageTk.PhotoImage(file=r'img\robot.png')
         self.canvas.create_image(45, 670, image=img, anchor=customtkinter.NW)
         self.canvas.create_image(105, 670, image=img, anchor=customtkinter.NW)
         self.canvas.create_image(165, 670, image=img, anchor=customtkinter.NW)
@@ -119,14 +118,21 @@ class App(customtkinter.CTk):
         button_adding = customtkinter.CTkButton(buttonFrame, text="🛑 Añadir destino", command=self.add_box, text_color="white", )
         button_obstac = customtkinter.CTkButton(buttonFrame, text="🧱 Añadir obstaculo", command=self.add_obstacle, text_color="white",)
         button_solved = customtkinter.CTkButton(buttonFrame, text="⭐ Buscar camino", command=self.search_path, text_color="white", fg_color="#67DA75")
-        button_instruc= customtkinter.CTkButton(buttonFrame, text="❔Instrucciones", text_color="white", command=self.info, fg_color="#FD3E73")
+        button_instruc= customtkinter.CTkButton(buttonFrame, text="❔ Instrucciones", text_color="white", command=self.info, fg_color="#FD3E73")
         
 
+        # button_delete.grid(row=0, column=0, padx=10, pady=10)
+        # button_adding.grid(row=0, column=1, padx=10, pady=10)
+        # button_solved.grid(row=1, column=0, padx=10, pady=10)
+        # button_obstac.grid(row=0, column=2, padx=10, pady=10)
+        # button_instruc.grid(row=1, column=2, padx=10, pady=10)
+        
+        #prueba Manuel
         button_delete.grid(row=0, column=0, padx=10, pady=10)
         button_adding.grid(row=0, column=1, padx=10, pady=10)
-        button_solved.grid(row=1, column=0, padx=10, pady=10)
-        button_obstac.grid(row=0, column=2, padx=10, pady=10)
-        button_instruc.grid(row=1, column=2, padx=10, pady=10)
+        button_solved.grid(row=0, column=2, padx=10, pady=10)
+        button_obstac.grid(row=0, column=3, padx=10, pady=10)
+        button_instruc.grid(row=0, column=4, padx=10, pady=10)
 
 
         buttonFrame.pack(fill=customtkinter.X)
@@ -385,7 +391,8 @@ class App(customtkinter.CTk):
             self.rendered_path.append(line)
             self.rendered_path.append(dot)
     def info (self):
-        messagebox.showinfo(message="Buscar ruta corta\n1. Seleccionar el paquete(Cuadrado) \n2. Dar click a Buscar Ruta\n\n Agregar obstaculo \n1. Dar click a Añadir Obstaculo\n 2. Poner un numero de 1 a 6\n3. Colocar obstaculo en donde gustes\n\n Agregar paquete \n1. Dar click a Añadir Paquete\n3. Colocar paquete en donde gustes\n\n Borrar \n1. Seleccionar un paquete u obstaculo en el mapa\n2. Dar click a Borrar", title="Instrucciones")
+        instrucciones = Instructions(self.is_loading, self)
+        instrucciones.focus()  # if window exists focus it
 
 
 if __name__ == "__main__":
