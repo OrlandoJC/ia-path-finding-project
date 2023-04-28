@@ -1,6 +1,6 @@
 class CanvasSetting:
     SIZE_HEIGHT = 710
-    SIZE_WIDTH = 690
+    SIZE_WIDTH = 688
     BACKGROUND_COLOR = "white"
 
     
