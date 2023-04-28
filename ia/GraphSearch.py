@@ -13,6 +13,11 @@ def get_path(inicio_bot, fin_objetivo, obstacl):
     num_episodes = 10000
 
     grid = np.zeros((24, 24))
+    grid [0, :] = 1
+    grid [-1, :] = 1
+    grid [:, 0] = 1
+    grid [:, -1] = 1
+
 
     for obstacle in obstacl:
         grid[obstacle[0]:obstacle[1], obstacle[2]] = 1

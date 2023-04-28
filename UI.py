@@ -183,8 +183,13 @@ class App(customtkinter.CTk):
                     self.currentTagSelected = current_id
 
         if self.user_add_box:
-            colocarCaja(self.canvas, x, y)
-            self.user_add_box = False
+            print(x)
+            if x > 21:
+                messagebox.showwarning("Error","No se pudo añadir el destino porque \n ya sobrepaso los limites del mapa.\n Por favor intente de nuevo.")
+                self.user_add_box = True
+            else:
+                colocarCaja(self.canvas, x, y)
+                self.user_add_box = False
 
         if self.user_obstacle:
             colocarObstaculo(self.canvas, x, y, self.user_obstacle_size)
