@@ -16,5 +16,5 @@ Run the app
 ## Screenshot
 
 <div style="text-align:center">
-  <img src="showcase/example.png" alt="Descripción de la imagen" width=580px>
+  <img src="showcase/example_v2.png" alt="Descripción de la imagen" width=580px>
 </div>
