@@ -7,7 +7,7 @@ class BotsView(customtkinter.CTkToplevel):
         self.config(background="white")
         self.title("Visualizacion")
 
-        self.label = customtkinter.CTkLabel(self, text="Ver camino del bot", fg_color="white")
+        self.label = customtkinter.CTkLabel(self, text="Ver camino del agente", fg_color="white")
         self.label.pack(padx=20, pady=20)
 
         self.paths = paths

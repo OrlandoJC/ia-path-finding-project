@@ -17,6 +17,7 @@ from config.app import AppConfig
 # views
 from views.config import SettingsView
 from views.BotsView import BotsView
+from views.LoadingView import LoadingView
 
 # environment
 from config.enviroment import *
@@ -31,16 +32,33 @@ class App(customtkinter.CTk):
         # self.resizable(False, False)
         self.title(AppConfig.TITLE)
 
+        # Obtener el ancho y la altura de la pantalla
+        ancho_pantalla = self.winfo_screenwidth()
+        altura_pantalla = self.winfo_screenheight()
+
+        # Obtener el ancho y la altura de la ventana
+        ancho_ventana = 560 # Coloca aquí el ancho de tu ventana
+        altura_ventana = 690 # Coloca aquí la altura de tu ventana
+
+        # Calcular la posición x e y para que la ventana esté centrada
+        posicion_x = int(ancho_pantalla / 2 - ancho_ventana / 2)
+        posicion_y = int(altura_pantalla / 2 - altura_ventana / 2)
+
+        # Establecer la posición de la ventana en el centro de la pantalla
+        self.geometry("{}x{}+{}+{}".format(ancho_ventana, altura_ventana, posicion_x, posicion_y))
+
+
         # global state
         self.user_add_box = False
         self.user_del_box = False
         self.user_sel_box = True
-
+        
         self.user_obstacle = False
         self.user_obstacle_size = 1
 
         self.last_shadow_box = None
         self.last_shadow_obs = None
+        self.window_loading = None
 
         self.rendered_path = []
         self.obstacles_add = []
@@ -48,6 +66,9 @@ class App(customtkinter.CTk):
 
         self.currentTagSelected = None
         self.current_coord_selected = (15, 10)
+
+        self.is_loading = customtkinter.BooleanVar()
+        self.is_loading.set(False)
 
         self.main_program()
 
@@ -94,25 +115,25 @@ class App(customtkinter.CTk):
         buttonFrame.columnconfigure(2, weight=1)
         
 
-        button_delete = customtkinter.CTkButton(buttonFrame, text="delete box", command=self.delete_box,text_color="white")
-        button_adding = customtkinter.CTkButton(buttonFrame, text="add box", command=self.add_box, text_color="white")
-        button_solved = customtkinter.CTkButton(buttonFrame, text="find path", command=self.search_path, text_color="white")
-        button_obstac = customtkinter.CTkButton(buttonFrame, text="+ obstacle", command=self.add_obstacle, text_color="white")
-        button_instruc= customtkinter.CTkButton(buttonFrame, text="Instrucciones", text_color="white", command=self.info, fg_color="red")
+        button_delete = customtkinter.CTkButton(buttonFrame, text="❎ Borrar seleccion", command=self.delete_box,text_color="white", )
+        button_adding = customtkinter.CTkButton(buttonFrame, text="🛑 Añadir destino", command=self.add_box, text_color="white", )
+        button_obstac = customtkinter.CTkButton(buttonFrame, text="🧱 Añadir obstaculo", command=self.add_obstacle, text_color="white",)
+        button_solved = customtkinter.CTkButton(buttonFrame, text="⭐ Buscar camino", command=self.search_path, text_color="white", fg_color="#67DA75")
+        button_instruc= customtkinter.CTkButton(buttonFrame, text="❔Instrucciones", text_color="white", command=self.info, fg_color="#FD3E73")
         
 
         button_delete.grid(row=0, column=0, padx=10, pady=10)
         button_adding.grid(row=0, column=1, padx=10, pady=10)
-        button_solved.grid(row=0, column=2, padx=10, pady=10)
-        button_obstac.grid(row=1, column=1, padx=10, pady=10)
+        button_solved.grid(row=1, column=0, padx=10, pady=10)
+        button_obstac.grid(row=0, column=2, padx=10, pady=10)
         button_instruc.grid(row=1, column=2, padx=10, pady=10)
 
 
         buttonFrame.pack(fill=customtkinter.X)
 
-        self.progressbar = customtkinter.CTkProgressBar(master=self, mode="indeterminate", fg_color="white")
-        self.progressbar.place_forget()
-
+        # self.progressbar = customtkinter.CTkProgressBar(master=self, mode="indeterminate", fg_color="white")
+        
+        # self.progressbar.place_forget()
         # end of button's frame
 
     """
@@ -198,8 +219,8 @@ class App(customtkinter.CTk):
                             self.obstacles_add = tuple(lista_tupla)
         
                 self.canvas.delete(self.currentTagSelected)
-            
-        # code for deleting a box ...
+        else:
+            messagebox.showwarning("Borrar elemento", "No has seleccionado ningun objeto. Has click en un obstaculo u objetivo para eliminarlo")
 
     """
         This function sets the global variable user_add_box to let click_on_cavas know if it has to draw a box instead of selecting an existent one
@@ -217,21 +238,26 @@ class App(customtkinter.CTk):
 
     def search_path(self):
 
-        if self.currentTagSelected is None: return
+        if self.currentTagSelected is None: 
+            messagebox.showwarning("Borrar elemento", "No has seleccionado ningun objeto. Has click en objetivo para buscar caminos")
+            return
 
         if not self.is_a_valid_box_selected(): return
 
         if self.rendered_path:
             self.clean_canvas()
 
-        self.progressbar.place(relx=0.5, rely=0.1, anchor='center')
-        self.progressbar.start()
+        # self.progressbar.place(relx=0.5, rely=0.1, anchor='center')
+        # self.progressbar.start()
+        self.is_loading.set(True)
 
+        self.window_loading = LoadingView(self.is_loading, self)
+        self.window_loading.focus()  # if window exists focus it
+       
         # Crear un hilo separado para ejecutar la función en paralelo
         t = threading.Thread(target=self.ejecutar_en_paralelo_async)
         t.start()
         hilos_activos = threading.enumerate()
-        print('Los hilos activos son:', hilos_activos)
 
     """
         This function calls the searching path algorithtm and draws the result coordinates on the canvas
@@ -267,8 +293,12 @@ class App(customtkinter.CTk):
 
         self.config(cursor="arrow")
 
-        self.progressbar.stop()
-        self.progressbar.place_forget()
+        self.is_loading.set(False)
+        # self.progressbar.stop()
+        # self.progressbar.place_forget()
+        
+        if self.window_loading :
+            self.window_loading.destroy()
 
         # Imprimir los resultados obtenidos
         print("Resultados:")
@@ -283,6 +313,8 @@ class App(customtkinter.CTk):
         # print(recompensas)
         print("El camino mas corto es : ")
         print(short_path[1])
+
+        messagebox.showinfo("ruta mas corta encontrada", "A continuación se dibujará en el mapa la ruta mas corta encontrada por el agente que corresponde")
 
         parejas = []
         ruta = short_path[1]
@@ -306,6 +338,7 @@ class App(customtkinter.CTk):
 
         self.toplevel_window = BotsView(recompensas, self.draw_individual_path, self)
         self.toplevel_window.focus()  # if window exists focus it
+        
 
         
     def clean_canvas(self):

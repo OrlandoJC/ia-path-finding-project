@@ -5,13 +5,13 @@
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install the required packages.
 
 ```bash
-    pip install -r requirements.txt
+  pip install -r requirements.txt
 ```
 
 Run the app
 
 ```bash
-   python UI.py
+  python UI.py
 ```
 ## Screenshot
 
