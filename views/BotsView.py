@@ -6,7 +6,7 @@ class BotsView(customtkinter.CTkToplevel):
         super().__init__(*args, **kwargs)
         self.geometry("400x210")
         self.config(background="white")
-        self.title("Visualizacion")
+        self.title("Visualización")
 
         self.label = customtkinter.CTkLabel(self, text="Ver camino del agente", fg_color="white", font=("Comic Sans MS",14))
         self.label.pack(padx=20, pady=20)
@@ -73,5 +73,5 @@ class BotsView(customtkinter.CTkToplevel):
             color_to_path = self.colors[7]
             longitud = len(path_to_draw)
 
-        self.tamaño.configure(text=f"El {choice} realizara {longitud} movimientos", font=("Comic Sans MS",14)) #Update values
+        self.tamaño.configure(text=f"El {choice} realizará {longitud} movimientos", font=("Comic Sans MS",14)) #Update values
         self.onDrawPath(path_to_draw, color_to_path)
