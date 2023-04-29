@@ -32,7 +32,7 @@ class LoadingView(customtkinter.CTkToplevel):
 
         self.isLoading = isLoading
 
-        self.textos = ["Buscando caminos posibles...", "Calculando recompensas...", "Generando tabla Q...", "Buscando la ruta mas optima", "Sí, sí esta funcionando 😁"]
+        self.textos = ["Buscando caminos posibles...", "Calculando recompensas...", "Generando tabla Q...", "Buscando la ruta más optima", "Sí, sí esta funcionando 😁", "Ten paciencia, tu lap es muy \n vieja para mi algoritmo 😘"]
 
         # Variable de índice
         self.indice = 0

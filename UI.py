@@ -115,12 +115,12 @@ class App(customtkinter.CTk):
         buttonFrame.columnconfigure(2, weight=1)
         
 
-        button_delete = customtkinter.CTkButton(buttonFrame, text="❎ Borrar seleccion", command=self.delete_box,text_color="white", )
+        button_delete = customtkinter.CTkButton(buttonFrame, text="❎ Borrar selección", command=self.delete_box,text_color="white", )
         button_adding = customtkinter.CTkButton(buttonFrame, text="🛑 Añadir destino", command=self.add_box, text_color="white", )
-        button_obstac = customtkinter.CTkButton(buttonFrame, text="🧱 Añadir obstaculo", command=self.add_obstacle, text_color="white",)
+        button_obstac = customtkinter.CTkButton(buttonFrame, text="🧱 Añadir obstáculo", command=self.add_obstacle, text_color="white",)
         button_solved = customtkinter.CTkButton(buttonFrame, text="⭐ Buscar camino", command=self.search_path, text_color="white", fg_color="#67DA75")
         button_instruc= customtkinter.CTkButton(buttonFrame, text="❔ Instrucciones", text_color="white", command=self.info, fg_color="#FD3E73")
-        button_credits= customtkinter.CTkButton(buttonFrame, text="📋 Creditos", text_color="white", command=self.creditos, fg_color="#FD3E73")
+        button_credits= customtkinter.CTkButton(buttonFrame, text="📋 Créditos", text_color="white", command=self.creditos, fg_color="#FD3E73")
 
         button_delete.grid(row=0, column=0, padx=10, pady=10)
         button_adding.grid(row=0, column=1, padx=10, pady=10)
@@ -185,25 +185,29 @@ class App(customtkinter.CTk):
         if self.user_add_box:
             print(x)
             if x > 21:
-                messagebox.showwarning("Error","No se pudo añadir el destino porque \n ya sobrepaso los limites del mapa.\n Por favor intente de nuevo.")
+                messagebox.showwarning("Error","No se pudo añadir el destino porque \n ya sobrepasó los limites del mapa.\n Por favor intente de nuevo.")
                 self.user_add_box = True
             else:
                 colocarCaja(self.canvas, x, y)
                 self.user_add_box = False
 
         if self.user_obstacle:
-            colocarObstaculo(self.canvas, x, y, self.user_obstacle_size)
-            self.user_obstacle = False
-            self.obstacles_add = list(self.obstacles_add)
-            self.obstacles_add.append((x, x + self.user_obstacle_size, y))
-            self.obstacles_add = tuple(self.obstacles_add)
+            print(x+self.user_obstacle_size)
+            if (x+self.user_obstacle_size) > 23:
+                messagebox.showwarning("Error","No se puede añadir el obstáculo porque \n va a sobrepasar los limites del mapa.\n Por favor intente de nuevo.")
+            else:
+                colocarObstaculo(self.canvas, x, y, self.user_obstacle_size)
+                self.user_obstacle = False
+                self.obstacles_add = list(self.obstacles_add)
+                self.obstacles_add.append((x, x + self.user_obstacle_size, y))
+                self.obstacles_add = tuple(self.obstacles_add)
 
     def delete_box(self):
 
         if (self.currentTagSelected):
             answer = askokcancel(
-                title='Confirmacion',
-                message='Esta accion borrará la caja seleccionada. ¿Estas seguro?',
+                title='Confirmación',
+                message='Esta acción borrará la caja seleccionada. ¿Estás seguro?',
                 icon=WARNING
             )
 
@@ -227,7 +231,7 @@ class App(customtkinter.CTk):
         
                 self.canvas.delete(self.currentTagSelected)
         else:
-            messagebox.showwarning("Borrar elemento", "No has seleccionado ningun objeto. Has click en un obstaculo u objetivo para eliminarlo")
+            messagebox.showwarning("Borrar elemento", "No has seleccionado ningún objeto. Has click en un obstáculo u objetivo para eliminarlo.")
 
     """
         This function sets the global variable user_add_box to let click_on_cavas know if it has to draw a box instead of selecting an existent one
@@ -246,7 +250,7 @@ class App(customtkinter.CTk):
     def search_path(self):
 
         if self.currentTagSelected is None: 
-            messagebox.showwarning("Borrar elemento", "No has seleccionado ningun objeto. Has click en objetivo para buscar caminos")
+            messagebox.showwarning("Borrar elemento", "No has seleccionado ningún objeto. Has click en objetivo para buscar caminos.")
             return
 
         if not self.is_a_valid_box_selected(): return
@@ -318,10 +322,10 @@ class App(customtkinter.CTk):
         short_path = min(recompensas)
 
         # print(recompensas)
-        print("El camino mas corto es : ")
+        print("El camino más corto es : ")
         print(short_path[1])
 
-        messagebox.showinfo("ruta mas corta encontrada", "A continuación se dibujará en el mapa la ruta mas corta encontrada por el agente que corresponde")
+        messagebox.showinfo("Ruta mas corta encontrada", "A continuación se dibujará en el mapa la ruta más corta encontrada por el agente que corresponde")
 
         parejas = []
         ruta = short_path[1]
@@ -361,17 +365,17 @@ class App(customtkinter.CTk):
 
     def add_obstacle(self):
         self.user_obstacle = True    
-        dialog = customtkinter.CTkInputDialog(text="tamaño de obstaculo:", title="obstaculo")
+        dialog = customtkinter.CTkInputDialog(text="Tamaño de obstáculo:", title="Obstáculo")
         self.user_obstacle_size = int(dialog.get_input())
 
         if self.user_obstacle_size >21:
-            messagebox.showwarning("Error","No se pudo añadir el obstaculo porque \n va a sobrepasar los limites del mapa.\n Por favor inserte un tamaño menor a 22.")
+            messagebox.showwarning("Error","No se pudo añadir el obstáculo porque \n va a sobrepasar los limites del mapa.\n Por favor inserte un tamaño menor a 22.")
             self.user_obstacle = False
         else:
             pass
 
     def draw_individual_path(self, path, color):
-        print("dibujando...", path)
+        print("Dibujando...", path)
 
         
         if self.rendered_path:
