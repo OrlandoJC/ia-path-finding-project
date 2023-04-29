@@ -194,7 +194,9 @@ class App(customtkinter.CTk):
         if self.user_obstacle:
             colocarObstaculo(self.canvas, x, y, self.user_obstacle_size)
             self.user_obstacle = False
+            self.obstacles_add = list(self.obstacles_add)
             self.obstacles_add.append((x, x + self.user_obstacle_size, y))
+            self.obstacles_add = tuple(self.obstacles_add)
 
     def delete_box(self):
 
@@ -358,10 +360,15 @@ class App(customtkinter.CTk):
         pass
 
     def add_obstacle(self):
-        self.user_obstacle = True
-
+        self.user_obstacle = True    
         dialog = customtkinter.CTkInputDialog(text="tamaño de obstaculo:", title="obstaculo")
         self.user_obstacle_size = int(dialog.get_input())
+
+        if self.user_obstacle_size >21:
+            messagebox.showwarning("Error","No se pudo añadir el obstaculo porque \n va a sobrepasar los limites del mapa.\n Por favor inserte un tamaño menor a 22.")
+            self.user_obstacle = False
+        else:
+            pass
 
     def draw_individual_path(self, path, color):
         print("dibujando...", path)
