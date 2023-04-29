@@ -195,6 +195,7 @@ class App(customtkinter.CTk):
             colocarObstaculo(self.canvas, x, y, self.user_obstacle_size)
             self.user_obstacle = False
             self.obstacles_add.append((x, x + self.user_obstacle_size, y))
+            print("obstaculo añadido")
 
     def delete_box(self):
 
