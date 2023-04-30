@@ -1,4 +1,5 @@
 import customtkinter
+from tkinter import ttk
 from PIL import Image, ImageTk
 
 class BotsView(customtkinter.CTkToplevel):
@@ -8,24 +9,32 @@ class BotsView(customtkinter.CTkToplevel):
         self.config(background="white")
         self.title("Visualización")
 
-        self.label = customtkinter.CTkLabel(self, text="Ver camino del agente", fg_color="white", font=("Comic Sans MS",14))
+        self.selected = False
+
+        self.label = customtkinter.CTkLabel(self, text="Ver camino del agente", fg_color="white")
         self.label.pack(padx=20, pady=20)
 
         self.paths = paths
         self.onDrawPath = onDrawPath
 
-        combobox = customtkinter.CTkComboBox(master=self,
-                                     values=["Bot 1", "Bot 2", "Bot 3", "Bot 4", "Bot 5", "Bot 6", "Bot 7", "Bot 8"],
-                                     command=self.combobox_callback, button_color="#6495ED", text_color="black", state="readonly")
+        combobox = customtkinter.CTkComboBox(
+            master=self,
+            values=["Bot 1", "Bot 2", "Bot 3", "Bot 4", "Bot 5", "Bot 6", "Bot 7", "Bot 8"],
+            command=self.combobox_callback, 
+            button_color="#6495ED", 
+            text_color="black", state="readonly"
+        )
         combobox.pack(padx=20, pady=10)
         combobox.set("Seleccionar bot..")  # set initial value
         
         #Principal State
-        self.tamaño=customtkinter.CTkLabel(self, text="Esperando..", fg_color="white", font=("Comic Sans MS",14)) 
+        self.tamaño=customtkinter.CTkLabel(self, text="Esperando..", fg_color="white", font=("Arial",14), bg_color="white") 
         self.tamaño.pack(padx=20, pady=15)
         self.img = img = ImageTk.PhotoImage(file=r'img\robot.png')
         self.label_imagen= customtkinter.CTkLabel(self,image=self.img,text=" ", anchor=customtkinter.NW, fg_color="white", bg_color="white")
         self.label_imagen.pack()
+
+
 
     def combobox_callback(self, choice):
         print("combobox dropdown clicked:", choice)
@@ -74,4 +83,4 @@ class BotsView(customtkinter.CTkToplevel):
             longitud = len(path_to_draw)
 
         self.tamaño.configure(text=f"El {choice} realizará {longitud} movimientos", font=("Comic Sans MS",14)) #Update values
-        self.onDrawPath(path_to_draw, color_to_path)
+        self.onDrawPath(path_to_draw, False, color_to_path)

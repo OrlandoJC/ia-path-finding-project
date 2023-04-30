@@ -2,7 +2,7 @@ import customtkinter
 import math
 from tkinter.messagebox import askokcancel, showinfo, WARNING
 from PIL import Image, ImageTk
-from utils.graphics import colocarCaja, crearCuadricula, colocarObstaculo, boxByReference, obstacleReference
+from utils.graphics import colocarCaja, crearCuadricula, colocarObstaculo, boxByReference, obstacleReference, createDot, createLine
 from database.mapa import map, obstacles
 import time
 import threading
@@ -14,14 +14,14 @@ from config.canvas import CanvasSetting
 from config.app import AppConfig
 
 # views
-from views.config import SettingsView
+from views.configView import SettingsView
 from views.BotsView import BotsView
 from views.LoadingView import LoadingView
-from views.instructions import Instructions
-from views.credits import Credits
+from views.InstructionsView import Instructions
+from views.CreditsView import Credits
+
 # environment
 from config.enviroment import *
-
 
 class App(customtkinter.CTk):
     def __init__(self):
@@ -46,7 +46,6 @@ class App(customtkinter.CTk):
 
         # Establecer la posición de la ventana en el centro de la pantalla
         self.geometry("{}x{}+{}+{}".format(ancho_ventana, altura_ventana, posicion_x, posicion_y))
-
 
         # global state
         self.user_add_box = False
@@ -95,7 +94,7 @@ class App(customtkinter.CTk):
         colocarCaja(self.canvas, 14, 8)
 
         self.img = img = ImageTk.PhotoImage(file=r'img\robot.png')
-        self.canvas.create_image(45, 670, image=img, anchor=customtkinter.NW)
+        self.canvas.create_image(45, 670,  image=img, anchor=customtkinter.NW)
         self.canvas.create_image(105, 670, image=img, anchor=customtkinter.NW)
         self.canvas.create_image(165, 670, image=img, anchor=customtkinter.NW)
         self.canvas.create_image(225, 670, image=img, anchor=customtkinter.NW)
@@ -108,13 +107,11 @@ class App(customtkinter.CTk):
             x, l, y = obstacle
             colocarObstaculo(self.canvas, x, y, l - x)
 
-            # as the project is not completed, buttons will be placed in a separated frame
         buttonFrame = customtkinter.CTkFrame(self, fg_color="white")
         buttonFrame.columnconfigure(0, weight=1)
         buttonFrame.columnconfigure(1, weight=1)
         buttonFrame.columnconfigure(2, weight=1)
         
-
         button_delete = customtkinter.CTkButton(buttonFrame, text="❎ Borrar selección", command=self.delete_box,text_color="white", )
         button_adding = customtkinter.CTkButton(buttonFrame, text="🛑 Añadir destino", command=self.add_box, text_color="white", )
         button_obstac = customtkinter.CTkButton(buttonFrame, text="🧱 Añadir obstáculo", command=self.add_obstacle, text_color="white",)
@@ -131,17 +128,10 @@ class App(customtkinter.CTk):
 
         buttonFrame.pack(fill=customtkinter.X)
 
-        # self.progressbar = customtkinter.CTkProgressBar(master=self, mode="indeterminate", fg_color="white")
-        
-        # self.progressbar.place_forget()
-        # end of button's frame
-
     """
         This function gets executed when user moves his mouse on the canvas
     """
-
     def motion_action(self, event):
-        # print(event.x / 30, event.y / 30, event.widget)
         x = math.floor(event.x / 30)
         y = math.floor(event.y / 30)
 
@@ -156,7 +146,6 @@ class App(customtkinter.CTk):
     """
         This function gets executed when user clicks on canvas
     """
-
     def click_on_canvas(self, event):
         x = math.floor(event.x / 30)
         y = math.floor(event.y / 30)
@@ -165,37 +154,43 @@ class App(customtkinter.CTk):
         curreng_tg = self.canvas.gettags(current_id)
 
         if self.user_sel_box:
-            if "box" in curreng_tg and "current" in curreng_tg:
+            if "box" in curreng_tg and "current" in curreng_tg :
                 coords = self.canvas.bbox(current_id)
 
-                if self.currentTagSelected is None:  # CAMBIAR POR ID NO TAG
+                if self.currentTagSelected is None :  # CAMBIAR POR ID NO TAG
                     self.currentTagSelected = current_id
                     self.canvas.itemconfigure(current_id, fill='#E93251')
-                else:
+                else :
                     current_selected_tg = self.canvas.gettags(self.currentTagSelected)
 
-                    if "obstacle" in current_selected_tg:
+                    if "obstacle" in current_selected_tg :
                         self.canvas.itemconfigure(self.currentTagSelected, fill='#34495E')
-                    else:
+                    else :
                         self.canvas.itemconfigure(self.currentTagSelected, fill='#33A1FF')
 
                     self.canvas.itemconfigure(current_id, fill='#E93251')
                     self.currentTagSelected = current_id
 
-        if self.user_add_box:
-            print(x)
-            if x > 21:
-                messagebox.showwarning("Error","No se pudo añadir el destino porque \n ya sobrepasó los limites del mapa.\n Por favor intente de nuevo.")
+        if self.user_add_box :
+            if x > 21 :
+                messagebox.showwarning(
+                    title="Error",
+                    message="No se pudo añadir el destino porque \n ya sobrepasó los limites del mapa.\n Por favor intente de nuevo."
+                )
                 self.user_add_box = True
-            else:
+            else :
                 colocarCaja(self.canvas, x, y)
                 self.user_add_box = False
 
         if self.user_obstacle:
-            print(x+self.user_obstacle_size)
-            if (x+self.user_obstacle_size) > 23:
-                messagebox.showwarning("Error","No se puede añadir el obstáculo porque \n va a sobrepasar los limites del mapa.\n Por favor intente de nuevo.")
-            else:
+            full_osbtacle_size = x + self.user_obstacle_size
+
+            if full_osbtacle_size  > 23 :
+                messagebox.showwarning(
+                    title="Error",
+                    message="No se puede añadir el obstáculo porque \n va a sobrepasar los limites del mapa.\n Por favor intente de nuevo."
+                )
+            else :
                 colocarObstaculo(self.canvas, x, y, self.user_obstacle_size)
                 self.user_obstacle = False
                 self.obstacles_add = list(self.obstacles_add)
@@ -203,40 +198,40 @@ class App(customtkinter.CTk):
                 self.obstacles_add = tuple(self.obstacles_add)
 
     def delete_box(self):
-
-        if (self.currentTagSelected):
+        if self.currentTagSelected :
             answer = askokcancel(
                 title='Confirmación',
                 message='Esta acción borrará la caja seleccionada. ¿Estás seguro?',
                 icon=WARNING
             )
 
-            if answer:
+            if answer :
                 selected_box = self.canvas.find_withtag(self.currentTagSelected)
                 current_selected_tg = self.canvas.gettags(self.currentTagSelected)
 
-                if "obstacle" in current_selected_tg:
+                if "obstacle" in current_selected_tg :
                     coords = self.canvas.bbox(selected_box)
-                    x_pos = int((coords[0]+1) / 30)
-                    span  = int((coords[2]+1) / 30)
-                    y_pos = int((coords[1]+1) / 30)
+                    x_pos = int((coords[0] + 1) / 30)
+                    span  = int((coords[2] + 1) / 30)
+                    y_pos = int((coords[1] + 1) / 30)
 
                     tuple_seek = (x_pos, span, y_pos)
                     
-                    for i, tupla in enumerate(self.obstacles_add):
-                        if tupla == tuple_seek:
-                            lista_tupla = list(self.obstacles_add)  # convertir la tupla en una lista
-                            lista_tupla.pop(i)  # eliminar el elemento por su índice
+                    for i, tupla in enumerate(self.obstacles_add) :
+                        if tupla == tuple_seek :
+                            lista_tupla = list(self.obstacles_add) 
+                            lista_tupla.pop(i)  
                             self.obstacles_add = tuple(lista_tupla)
         
                 self.canvas.delete(self.currentTagSelected)
-        else:
-            messagebox.showwarning("Borrar elemento", "No has seleccionado ningún objeto. Has click en un obstáculo u objetivo para eliminarlo.")
+        else :
+            messagebox.showwarning(
+                title="Borrar elemento", 
+                message="No has seleccionado ningún objeto. Has click en un obstáculo u objetivo para eliminarlo.")
 
     """
         This function sets the global variable user_add_box to let click_on_cavas know if it has to draw a box instead of selecting an existent one
     """
-
     def add_box(self):
         self.user_add_box = True
 
@@ -245,21 +240,24 @@ class App(customtkinter.CTk):
 
         if "obstacle" in selected_tags:
             return False
+        
         return True
 
     def search_path(self):
 
-        if self.currentTagSelected is None: 
-            messagebox.showwarning("Borrar elemento", "No has seleccionado ningún objeto. Has click en objetivo para buscar caminos.")
+        if self.currentTagSelected is None : 
+            messagebox.showwarning(
+                title="Borrar elemento", 
+                message="No has seleccionado ningún objeto. Has click en objetivo para buscar caminos."
+            )
             return
 
-        if not self.is_a_valid_box_selected(): return
+        if not self.is_a_valid_box_selected() : 
+            return
 
-        if self.rendered_path:
+        if self.rendered_path :
             self.clean_canvas()
 
-        # self.progressbar.place(relx=0.5, rely=0.1, anchor='center')
-        # self.progressbar.start()
         self.is_loading.set(True)
 
         self.window_loading = LoadingView(self.is_loading, self)
@@ -268,15 +266,10 @@ class App(customtkinter.CTk):
         # Crear un hilo separado para ejecutar la función en paralelo
         t = threading.Thread(target=self.ejecutar_en_paralelo_async)
         t.start()
-        hilos_activos = threading.enumerate()
 
     """
         This function calls the searching path algorithtm and draws the result coordinates on the canvas
     """
-
-    def hola(c):
-        print("Hola")
-
     def ejecutar_en_paralelo_async(self):
         selected_box = self.canvas.find_withtag(self.currentTagSelected)
         coords = self.canvas.bbox(selected_box)
@@ -289,25 +282,18 @@ class App(customtkinter.CTk):
 
         # r = 3
         # self.canvas.create_oval(x-r + 2, y-r + 2, x+r + 2, y+r + 2, fill="#33A1FF")
-
-        self.config(cursor="watch")
-
         inicio = time.time()
 
-        print(goal_coords)
         # Llamar a la función para ejecutar en paralelo
         resultados = ejecutar_en_paralelo(goal_coords, self.obstacles_add)
 
         # Tiempo total de ejecución
         tiempo_total = time.time() - inicio
+
         print(f"Tiempo total: {tiempo_total} segundos")
 
-        self.config(cursor="arrow")
-
         self.is_loading.set(False)
-        # self.progressbar.stop()
-        # self.progressbar.place_forget()
-        
+ 
         if self.window_loading :
             self.window_loading.destroy()
 
@@ -323,37 +309,22 @@ class App(customtkinter.CTk):
 
         # print(recompensas)
         print("El camino más corto es : ")
+
         print(short_path[1])
 
-        messagebox.showinfo("Ruta mas corta encontrada", "A continuación se dibujará en el mapa la ruta más corta encontrada por el agente que corresponde")
+        messagebox.showinfo(
+            title="Ruta mas corta encontrada", 
+            message="A continuación se dibujará en el mapa la ruta más corta encontrada por el agente que corresponde"
+        )
 
-        parejas = []
         ruta = short_path[1]
 
-        for i in range(len(ruta) - 1):
-            par = (ruta[i], ruta[i + 1])
-            parejas.append(par)
-
-        for par in parejas:
-            tupla1 = par[0]
-            tupla2 = par[1]
-            x1, y1 = tupla1
-            x2, y2 = tupla2
-            self.after(50)
-            line = self.canvas.create_line(x1 * 30 + 2, y1 * 30 + 2, x2 * 30 + 2, y2 * 30 + 2, width=3, fill="#33A1FF")
-            x, y, r = x2 * 30, y2 * 30, 3
-            dot = self.canvas.create_oval(x - r + 2, y - r + 2, x + r + 2, y + r + 2, fill="#33A1FF", outline="#33A1FF")
-
-            self.rendered_path.append(line)
-            self.rendered_path.append(dot)
+        self.draw_individual_path(ruta, True, "#33A1FF")
 
         self.toplevel_window = BotsView(recompensas, self.draw_individual_path, self)
         self.toplevel_window.focus()  # if window exists focus it
         
-
-        
     def clean_canvas(self):
-
         for path_element in self.rendered_path:
             self.canvas.delete(path_element)
 
@@ -364,20 +335,24 @@ class App(customtkinter.CTk):
         pass
 
     def add_obstacle(self):
-        self.user_obstacle = True    
-        dialog = customtkinter.CTkInputDialog(text="Tamaño de obstáculo:", title="Obstáculo")
-        self.user_obstacle_size = int(dialog.get_input())
+        dialog = customtkinter.CTkInputDialog(
+            text="Tamaño de obstáculo:", 
+            title="Obstáculo"
+        )
 
-        if self.user_obstacle_size >21:
-            messagebox.showwarning("Error","No se pudo añadir el obstáculo porque \n va a sobrepasar los limites del mapa.\n Por favor inserte un tamaño menor a 22.")
+        self.user_obstacle = True    
+        self.user_obstacle_size = int( dialog.get_input( ) )
+
+        if self.user_obstacle_size > 21 :
+            messagebox.showwarning(
+                title="Error", 
+                message="No se pudo añadir el obstáculo porque \n va a sobrepasar los limites del mapa.\n Por favor inserte un tamaño menor a 22."
+            )
             self.user_obstacle = False
-        else:
+        else :
             pass
 
-    def draw_individual_path(self, path, color):
-        print("Dibujando...", path)
-
-        
+    def draw_individual_path(self, path, with_time = False, color =""):
         if self.rendered_path:
             self.clean_canvas()
 
@@ -394,12 +369,14 @@ class App(customtkinter.CTk):
             x1, y1 = tupla1
             x2, y2 = tupla2
 
-            line = self.canvas.create_line(x1 * 30 + 2, y1 * 30 + 2, x2 * 30 + 2, y2 * 30 + 2, width=3, fill=color)
-            x, y, r = x2 * 30, y2 * 30, 3
-            dot = self.canvas.create_oval(x - r + 2, y - r + 2, x + r + 2, y + r + 2, fill=color,outline=color)
+            if with_time : self.after(50)
 
+            line = createLine(self.canvas, x1, y1, x2, y2)
+            x, y, r = x2 * 30, y2 * 30, 3
+            dot = createDot(self.canvas, x, y , r )
             self.rendered_path.append(line)
             self.rendered_path.append(dot)
+            
     def info (self):
         instrucciones = Instructions(self.is_loading, self)
         instrucciones.focus()  # if window exists focus it
