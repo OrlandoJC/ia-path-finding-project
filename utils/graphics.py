@@ -12,8 +12,8 @@ def obstacleReference(canvas, x, y, tam, start=0, base=30):
 
 def crearCuadricula(canvas):
   for i in range(30):
-    canvas.create_line((0, 30 + (i * 30)), (700, 30 + (i * 30)),width=1, fill="#EBEBFC")  # horizontal
-    canvas.create_line((30 + (i * 30), 0), (30 + (i * 30), 700), width=1, fill="#EBEBFC")  # vertical
+    canvas.create_line((0, 30 + (i * 30)), (700, 30 + (i * 30)),width=1, fill="white")  # horizontal
+    canvas.create_line((30 + (i * 30), 0), (30 + (i * 30), 700), width=1, fill="white")  # vertical
 
 def dibujarArista(canvas, x, y, size, base = 30):
   canvas.create_line(90, 100, 120, 100)
@@ -24,4 +24,4 @@ def createDot(canvas, x, y, r):
   return canvas.create_oval(x - r + 2, y - r + 2, x + r + 2, y + r + 2, fill="#33A1FF", outline="#33A1FF")
 
 def createLine(canvas,x1, y1, x2, y2 ):
-  return canvas.create_line(x1 * 30 + 2, y1 * 30 + 2, x2 * 30 + 2, y2 * 30 + 2, width=3, fill="#33A1FF")
+  return canvas.create_line(x1 * 30 + 2, y1 * 30 + 2, x2 * 30 + 2, y2 * 30 + 2, width=3, fill="#4686FA")
