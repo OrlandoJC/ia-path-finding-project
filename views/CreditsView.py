@@ -9,7 +9,9 @@ class Credits(customtkinter.CTkToplevel):
         self.resizable(False, False)
         self.title("")
 
-    # Obtener el ancho y la altura de la pantalla
+        self.attributes("-topmost", True)
+
+        # Obtener el ancho y la altura de la pantalla
         ancho_pantalla = self.winfo_screenwidth()
         altura_pantalla = self.winfo_screenheight()
 
