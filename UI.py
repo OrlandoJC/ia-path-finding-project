@@ -81,8 +81,6 @@ class App(customtkinter.CTk):
         self.main_program()
 
     def main_program(self):
-        # customtkinter.CTkLabel(master=self, text="Mapa").pack()
-
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=2)
         self.columnconfigure(2, weight=3)
@@ -150,7 +148,6 @@ class App(customtkinter.CTk):
             pady=50, 
             font=tkFont.Font(size=12, weight="bold"))
         
-
         frame_label_properties.columnconfigure(0, weight=1)
         frame_label_properties.columnconfigure(1, weight=1)
         frame_label_properties.columnconfigure(2, weight=1)
@@ -159,7 +156,6 @@ class App(customtkinter.CTk):
         frame_label_properties.rowconfigure(0, weight=1)
         frame_label_properties.rowconfigure(1, weight=1)
 
-        
         button_delete = customtkinter.CTkButton(frame_label_options, text="❎ Borrar", command=self.delete_box,text_color="white", fg_color="#FF7C7C")
         button_adding = customtkinter.CTkButton(frame_label_insert, text="🛑  Destino", command=self.add_box, text_color="white", fg_color="#8F8FFA")
         button_obstac = customtkinter.CTkButton(frame_label_insert, text="🧱 Obstáculo", command=self.add_obstacle, text_color="white",fg_color="#8F8FFA")
@@ -167,12 +163,6 @@ class App(customtkinter.CTk):
         
         #labels del algoritmo de qlearning
 
-        """
-            alpha = 0.1
-            gamma = 0.99
-            epsilon = 0.1
-            num_episodes = 10000
-        """
         label_alpha = customtkinter.CTkLabel(frame_label_properties, text="alpha:")
         self.spinb_alpha = Spinbox(frame_label_properties, from_=0.1, to=0.5, buttonbackground="#8F8FFA", relief="solid", foreground="black", width=3, textvariable=self.global_alpha, font=("Arial", 10), increment=0.1)
 
