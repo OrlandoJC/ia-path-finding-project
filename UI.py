@@ -1,8 +1,12 @@
 import customtkinter
+from tkinter import LabelFrame
+from tkinter import Spinbox
+import tkinter.font as tkFont
 import math
 from tkinter.messagebox import askokcancel, showinfo, WARNING
 from PIL import Image, ImageTk
 from utils.graphics import colocarCaja, crearCuadricula, colocarObstaculo, boxByReference, obstacleReference, createDot, createLine
+from utils.imagetk import getImageTk
 from database.mapa import map, obstacles
 import time
 import threading
@@ -37,8 +41,8 @@ class App(customtkinter.CTk):
         altura_pantalla = self.winfo_screenheight()
 
         # Obtener el ancho y la altura de la ventana
-        ancho_ventana = 560 # Coloca aquí el ancho de tu ventana
-        altura_ventana = 690 # Coloca aquí la altura de tu ventana
+        ancho_ventana = 850 # Coloca aquí el ancho de tu ventana
+        altura_ventana = 570 # Coloca aquí la altura de tu ventana
 
         # Calcular la posición x e y para que la ventana esté centrada
         posicion_x = int(ancho_pantalla / 2 - ancho_ventana / 2)
@@ -69,10 +73,17 @@ class App(customtkinter.CTk):
         self.is_loading = customtkinter.BooleanVar()
         self.is_loading.set(False)
 
+        self.global_alpha = customtkinter.DoubleVar(value=0.1)
+        self.global_gamma = customtkinter.DoubleVar(value=0.99)
+        self.global_epsil = customtkinter.DoubleVar(value=0.1)
+        self.global_episd = customtkinter.DoubleVar(value=10000)
+
         self.main_program()
 
     def main_program(self):
-        customtkinter.CTkLabel(master=self, text="Mapa").pack()
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=2)
+        self.columnconfigure(2, weight=3)
 
         self.canvas = customtkinter.CTkCanvas(
             master=self,
@@ -85,9 +96,9 @@ class App(customtkinter.CTk):
         self.canvas.bind('<Button-1>', self.click_on_canvas)
         self.canvas.bind("<ButtonRelease-1>", self.on_button_release)
 
-        self.canvas.pack(
-            anchor=customtkinter.CENTER,
-            expand=False
+        self.canvas.grid(
+            column=2,
+            row=0, 
         )
 
         crearCuadricula(self.canvas)
@@ -108,25 +119,111 @@ class App(customtkinter.CTk):
             colocarObstaculo(self.canvas, x, y, l - x)
 
         buttonFrame = customtkinter.CTkFrame(self, fg_color="white")
-        buttonFrame.columnconfigure(0, weight=1)
-        buttonFrame.columnconfigure(1, weight=1)
-        buttonFrame.columnconfigure(2, weight=1)
+
+        frame_label_properties = LabelFrame(
+            buttonFrame, 
+            text="Propiedades del algoritmo", 
+            bg="white", 
+            fg="#2F2E2E", 
+            padx=10, 
+            pady=50, 
+          
+            font=tkFont.Font(size=12, weight="bold"))
         
-        button_delete = customtkinter.CTkButton(buttonFrame, text="❎ Borrar selección", command=self.delete_box,text_color="white", )
-        button_adding = customtkinter.CTkButton(buttonFrame, text="🛑 Añadir destino", command=self.add_box, text_color="white", )
-        button_obstac = customtkinter.CTkButton(buttonFrame, text="🧱 Añadir obstáculo", command=self.add_obstacle, text_color="white",)
-        button_solved = customtkinter.CTkButton(buttonFrame, text="⭐ Buscar camino", command=self.search_path, text_color="white", fg_color="#67DA75")
-        button_instruc= customtkinter.CTkButton(buttonFrame, text="❔ Instrucciones", text_color="white", command=self.info, fg_color="#FD3E73")
-        button_credits= customtkinter.CTkButton(buttonFrame, text="📋 Créditos", text_color="white", command=self.creditos, fg_color="#FD3E73")
+        frame_label_insert = LabelFrame(
+            buttonFrame, 
+            text="Insertar elemento", 
+            bg="white", 
+            fg="#2F2E2E", 
+            padx=50, 
+            pady=50, 
+            font=tkFont.Font(size=12, weight="bold"))
+        
+        frame_label_options = LabelFrame(
+            buttonFrame, 
+            text="Opciones de seleccion", 
+            bg="white", 
+            fg="#2F2E2E", 
+            padx=50, 
+            pady=50, 
+            font=tkFont.Font(size=12, weight="bold"))
+        
+        frame_label_properties.columnconfigure(0, weight=1)
+        frame_label_properties.columnconfigure(1, weight=1)
+        frame_label_properties.columnconfigure(2, weight=1)
+        frame_label_properties.columnconfigure(3, weight=1)
 
-        button_delete.grid(row=0, column=0, padx=10, pady=10)
-        button_adding.grid(row=0, column=1, padx=10, pady=10)
-        button_solved.grid(row=1, column=0, padx=10, pady=10)
-        button_obstac.grid(row=0, column=2, padx=10, pady=10)
-        button_instruc.grid(row=1, column=2, padx=10, pady=10)
-        button_credits.grid(row=1, column=1, padx=10, pady=10)
+        frame_label_properties.rowconfigure(0, weight=1)
+        frame_label_properties.rowconfigure(1, weight=1)
 
-        buttonFrame.pack(fill=customtkinter.X)
+        button_delete = customtkinter.CTkButton(frame_label_options, text="❎ Borrar", command=self.delete_box,text_color="white", fg_color="#FF7C7C")
+        button_adding = customtkinter.CTkButton(frame_label_insert, text="🛑  Destino", command=self.add_box, text_color="white", fg_color="#8F8FFA")
+        button_obstac = customtkinter.CTkButton(frame_label_insert, text="🧱 Obstáculo", command=self.add_obstacle, text_color="white",fg_color="#8F8FFA")
+        button_solved = customtkinter.CTkButton(buttonFrame, text="⭐ Buscar camino", command=self.search_path, text_color="white", fg_color="#7D7DE7")
+        
+        #labels del algoritmo de qlearning
+
+        label_alpha = customtkinter.CTkLabel(frame_label_properties, text="alpha:")
+        self.spinb_alpha = Spinbox(frame_label_properties, from_=0.1, to=0.5, buttonbackground="#8F8FFA", relief="solid", foreground="black", width=3, textvariable=self.global_alpha, font=("Arial", 10), increment=0.1)
+
+        label_gamma = customtkinter.CTkLabel(frame_label_properties, text="gamma:")
+        self.spinb_gamma = Spinbox(frame_label_properties, from_=0.90, to=0.99, buttonbackground="#8F8FFA", relief="solid", foreground="black", width=3, textvariable=self.global_gamma, font=("Arial", 10), increment=0.01)
+
+        label_epsilon = customtkinter.CTkLabel(frame_label_properties, text="epsilon:")
+        self.spinb_epsilon = Spinbox(frame_label_properties, from_=0, to=1, buttonbackground="#8F8FFA", relief="solid", foreground="black", width=3, increment=0.01, textvariable=self.global_epsil ,font=("Arial", 10))
+
+        label_episodes = customtkinter.CTkLabel(frame_label_properties, text="episodios:")
+        self.spinb_episodes = Spinbox(frame_label_properties, from_=1000, to=100000, buttonbackground="#8F8FFA", relief="solid", foreground="black", width=5, increment=1, textvariable=self.global_episd, font=("Arial", 10))
+
+        label_alpha.grid(column = 0, row = 0, sticky="w", )
+        self.spinb_alpha.grid(column=1, row=0, sticky="w", padx=10)
+
+        label_gamma.grid(column = 2, row = 0, sticky="e", padx=15)
+        self.spinb_gamma.grid(column=3, row=0, sticky="w")
+
+        label_epsilon.grid(column = 0, row = 1, sticky="w", )
+        self.spinb_epsilon.grid(column=1, row=1, sticky="w", padx=10)
+
+        label_episodes.grid(column = 2, row = 1, sticky="e", padx=10)
+        self.spinb_episodes.grid(column=3, row=1, sticky="w")
+
+        #se añade al labelframe
+        button_delete.pack()
+        button_obstac.pack(pady=10)
+        button_adding.pack()
+
+        #el labelframe se añade al buttonframe
+        frame_label_properties.pack(pady=10)
+        frame_label_insert.pack(pady=10)
+        frame_label_options.pack(pady=10)
+
+        button_solved.pack(side="bottom", pady=10, fill="x", ipady=10)
+
+        home_icon = getImageTk("img/instructions.png")
+        info_icon = getImageTk("img/information.png")
+        barFrame = customtkinter.CTkFrame(self, fg_color="#8F8FFA")
+
+        button_home = customtkinter.CTkButton(barFrame, 
+            text="", 
+            image=home_icon, 
+            fg_color="#8F8FFA", 
+            hover_color="#6767D4", 
+            width=19, 
+            cursor="hand2",
+            command=self.info)
+        button_home.pack(pady=150)
+        button_credits = customtkinter.CTkButton(barFrame, 
+            text="", 
+            image=info_icon, 
+            fg_color="#8F8FFA", 
+            hover_color="#6767D4", 
+            width=19, 
+            cursor="hand2",
+            command=self.creditos)
+        button_credits.pack()
+
+        barFrame.grid(column=0, row=0, sticky="NS", ipadx=10)
+        buttonFrame.grid(column=1, row=0, ipadx=10, padx=10, sticky="NS")
 
     """
         This function gets executed when user moves his mouse on the canvas
@@ -244,7 +341,6 @@ class App(customtkinter.CTk):
         return True
 
     def search_path(self):
-
         if self.currentTagSelected is None : 
             messagebox.showwarning(
                 title="Borrar elemento", 
@@ -271,8 +367,14 @@ class App(customtkinter.CTk):
         This function calls the searching path algorithtm and draws the result coordinates on the canvas
     """
     def ejecutar_en_paralelo_async(self):
+        
         selected_box = self.canvas.find_withtag(self.currentTagSelected)
         coords = self.canvas.bbox(selected_box)
+
+        alpha = float(self.spinb_alpha.get())
+        gamma = float(self.spinb_gamma.get())
+        epsilon = float(self.spinb_epsilon.get())
+        episodes = int(self.spinb_episodes.get())
 
         x = coords[0] + 30
         y = coords[1] + 60
@@ -285,7 +387,7 @@ class App(customtkinter.CTk):
         inicio = time.time()
 
         # Llamar a la función para ejecutar en paralelo
-        resultados = ejecutar_en_paralelo(goal_coords, self.obstacles_add)
+        resultados = ejecutar_en_paralelo(goal_coords, self.obstacles_add, alpha, gamma, epsilon, episodes)
 
         # Tiempo total de ejecución
         tiempo_total = time.time() - inicio
@@ -373,9 +475,9 @@ class App(customtkinter.CTk):
 
             line = createLine(self.canvas, x1, y1, x2, y2)
             x, y, r = x2 * 30, y2 * 30, 3
-            dot = createDot(self.canvas, x, y , r )
+            # dot = createDot(self.canvas, x, y , r )
             self.rendered_path.append(line)
-            self.rendered_path.append(dot)
+            # self.rendered_path.append(dot)
             
     def info (self):
         instrucciones = Instructions(self.is_loading, self)

@@ -5,12 +5,12 @@ import multiprocessing, time, concurrent
 
 obstacles = [(5, 19, 18), (10, 23, 13), (2, 10, 10)]
 
-def get_path(inicio_bot, fin_objetivo, obstacl):
+def get_path(inicio_bot, fin_objetivo, obstacl, a, g, e, ep):
     # Definición de hiperparámetros
-    alpha = 0.1
-    gamma = 0.99
-    epsilon = 0.1
-    num_episodes = 10000
+    alpha = a
+    gamma = g
+    epsilon = e
+    num_episodes = ep
 
     grid = np.zeros((24, 24))
     grid [0, :] = 1
@@ -118,16 +118,16 @@ n_veces = 8
 
 # Función para generar argumentos diferentes para cada llamada a get_path()
 
-def generar_argumentos(goal_selected, obstacles):
+def generar_argumentos(goal_selected, obstacles, a, g, e, ep):
     # Lista de argumentos para arg1 y arg2
-    args_list = [((2, 23),  goal_selected, obstacles),
-                 ((4, 23),  goal_selected, obstacles),
-                 ((6, 23),  goal_selected, obstacles),
-                 ((8, 23),  goal_selected, obstacles),
-                 ((10, 23), goal_selected, obstacles),
-                 ((12, 23), goal_selected, obstacles),
-                 ((14, 23), goal_selected, obstacles),
-                 ((16, 23), goal_selected, obstacles)]
+    args_list = [((2, 23),  goal_selected, obstacles, a, g, e, ep),
+                 ((4, 23),  goal_selected, obstacles, a, g, e, ep),
+                 ((6, 23),  goal_selected, obstacles, a, g, e, ep),
+                 ((8, 23),  goal_selected, obstacles, a, g, e, ep),
+                 ((10, 23), goal_selected, obstacles, a, g, e, ep),
+                 ((12, 23), goal_selected, obstacles, a, g, e, ep),
+                 ((14, 23), goal_selected, obstacles, a, g, e, ep),
+                 ((16, 23), goal_selected, obstacles, a, g, e, ep)]
 
     # Obtener n_veces argumentos diferentes de forma aleatoria
     argumentos = []
@@ -139,11 +139,11 @@ def generar_argumentos(goal_selected, obstacles):
     return argumentos
 
 # Función para ejecutar get_path en paralelo con argumentos diferentes
-def ejecutar_en_paralelo(goal_selected, obstacles):
+def ejecutar_en_paralelo(goal_selected, obstacles, a, g, e, ep):
     # Crear un Pool de procesos en paralelo
     with multiprocessing.Pool() as pool:
         # Obtener argumentos diferentes para cada llamada
-        argumentos = generar_argumentos(goal_selected, obstacles)
+        argumentos = generar_argumentos(goal_selected, obstacles, a, g, e, ep)
 
         # Usar pool.starmap_async para ejecutar la función asincrónicamente con los argumentos generados
         resultados = pool.starmap_async(get_path, argumentos)
